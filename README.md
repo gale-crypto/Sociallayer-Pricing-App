@@ -14,7 +14,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173). Use **Back to Home** to go to `/`, and **Pricing** or **View Pricing** to go to `/pricing`.
+Open [http://localhost:5173](http://localhost:5173). The app is a single page: the pricing page at `/`.
 
 ## Build
 
@@ -27,5 +27,5 @@ npm run preview
 
 - **Vite** – build tool
 - **React 18** – UI
-- **React Router** – `/` (home) and `/pricing`
+- **Single page** – pricing only at `/`
 - **Tailwind CSS** – styling (same look as original HTML)

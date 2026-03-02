@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-
 function LogoIcon() {
   return (
     <div
@@ -21,13 +19,6 @@ export default function Pricing() {
           </div>
           <span className="font-bold text-xl tracking-tight">Social Layer</span>
         </div>
-
-        <Link
-          to="/"
-          className="back-btn px-6 py-2 rounded-full text-[13px] font-medium tracking-tight transition-all"
-        >
-          Back to Home
-        </Link>
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-12 lg:py-20 flex-grow w-full">
@@ -108,21 +99,11 @@ export default function Pricing() {
       <footer className="w-full text-center py-10 mt-auto border-t border-white/5 bg-black/10">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-6">
           <nav className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-[12px] font-semibold uppercase tracking-wider text-white/60">
-            <Link to="/pricing" className="hover:text-[#22d3ee] transition-colors">
-              Pricing
-            </Link>
-            <Link to="/privacy" className="hover:text-[#22d3ee] transition-colors">
-              Privacy Policy
-            </Link>
-            <Link to="/terms" className="hover:text-[#22d3ee] transition-colors">
-              Terms of Use
-            </Link>
-            <Link to="/refund" className="hover:text-[#22d3ee] transition-colors">
-              Refunds
-            </Link>
-            <Link to="/support" className="hover:text-[#22d3ee] transition-colors">
-              Support
-            </Link>
+            <a href="/pricing" className="hover:text-[#22d3ee] transition-colors">Pricing</a>
+            <a href="/privacy" className="hover:text-[#22d3ee] transition-colors">Privacy Policy</a>
+            <a href="/terms" className="hover:text-[#22d3ee] transition-colors">Terms of Use</a>
+            <a href="/refund" className="hover:text-[#22d3ee] transition-colors">Refunds</a>
+            <a href="/support" className="hover:text-[#22d3ee] transition-colors">Support</a>
           </nav>
           <div className="flex flex-col items-center gap-4">
             <a
