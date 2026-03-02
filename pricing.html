@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pricing | Social Layer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet">
+  <style>
+    body { 
+      background: radial-gradient(circle at center, #0e4f5a 0%, #052c33 100%); 
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      color: white;
+    }
+    .glass { 
+      background: rgba(255, 255, 255, 0.03); 
+      backdrop-filter: blur(12px); 
+      border: 1px solid rgba(255, 255, 255, 0.12); 
+    }
+    .cta-button {
+      background-color: #22d3ee;
+      color: #042f2e;
+      transition: all 0.2s ease-in-out;
+    }
+    .cta-button:hover {
+      background-color: #0891b2;
+      color: #ffffff;
+    }
+    .plan-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    .plan-card.highlight {
+      border-color: #22d3ee;
+      background: rgba(34, 211, 238, 0.05);
+    }
+    /* 이미지 스타일을 적용한 Back to Home 버튼 */
+    .back-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+    }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+  <header class="flex justify-between items-center p-6 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-gradient-to-br from-[#136a7a] to-[#20e3b2] rounded-full flex items-center justify-center">
+        <div class="w-[22px] h-[12px] bg-white" style="clip-path: path('M0,6 C5,-2 17,-2 22,6 C17,14 5,14 0,6 Z M4,6 C7,9 15,9 18,6 C15,5 7,5 4,6 Z');"></div>
+      </div>
+      <span class="font-bold text-xl tracking-tight">Social Layer</span>
+    </div>
+    
+    <a href="/" class="back-btn px-6 py-2 rounded-full text-[13px] font-medium tracking-tight transition-all">
+      Back to Home
+    </a>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-12 lg:py-20 flex-grow w-full">
+    <div class="text-center mb-16">
+      <h1 class="text-4xl lg:text-6xl font-bold mb-6">Social Layer Pro</h1>
+      <p class="text-slate-300 max-w-2xl mx-auto text-lg">
+        More control, when you want it. Defaults stay the same. Upgrade anytime. Cancel anytime.
+      </p>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8 items-stretch">
+      <div class="glass rounded-[2.5rem] p-10 flex flex-col justify-center">
+        <h2 class="text-2xl font-bold mb-8 text-[#22d3ee]">Why Go Pro?</h2>
+        <ul class="space-y-6">
+          <li class="flex items-start gap-4">
+            <div class="w-6 h-6 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center flex-shrink-0">✓</div>
+            <p class="text-slate-200">Unlimited edits and suggestions</p>
+          </li>
+          <li class="flex items-start gap-4">
+            <div class="w-6 h-6 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center flex-shrink-0">✓</div>
+            <p class="text-slate-200">Advanced settings and tone controls</p>
+          </li>
+          <li class="flex items-start gap-4">
+            <div class="w-6 h-6 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center flex-shrink-0">✓</div>
+            <p class="text-slate-200">App-level control (Gmail integration)</p>
+          </li>
+        </ul>
+      </div>
+
+      <div class="glass rounded-[2.5rem] p-8 flex flex-col gap-6">
+        <div class="plan-card rounded-3xl p-6">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-bold text-xl">Monthly Plan</h3>
+            <span class="text-2xl font-bold">$9.99<span class="text-sm font-normal text-slate-400">/mo</span></span>
+          </div>
+          <p class="text-sm text-slate-400">Billed monthly. Perfect for flexibility.</p>
+        </div>
+
+        <div class="plan-card highlight rounded-3xl p-6 relative">
+          <div class="absolute -top-3 right-6 bg-[#22d3ee] text-[#042f2e] text-[10px] font-bold px-3 py-1 rounded-full uppercase">Best Value</div>
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-bold text-xl">Annual Plan</h3>
+            <span class="text-2xl font-bold">$99.90<span class="text-sm font-normal text-slate-400">/yr</span></span>
+          </div>
+          <p class="text-sm text-slate-400 mb-4">Equivalent to $8.33 / month. (2 months free)</p>
+          <div class="flex items-center gap-3">
+            <span class="text-xs line-through text-slate-500">$119.88</span>
+            <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">Save 16.6%</span>
+          </div>
+        </div>
+
+        <button class="cta-button w-full py-4 rounded-2xl text-lg font-bold mt-4">
+          Upgrade to Pro
+        </button>
+        <p class="text-center text-[11px] text-slate-400 uppercase tracking-widest">No account required • 100% local</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="w-full text-center py-10 mt-auto border-t border-white/5 bg-black/10">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col items-center gap-6">
+      <nav class="flex flex-wrap justify-center gap-x-8 gap-y-3 text-[12px] font-semibold uppercase tracking-wider text-white/60">
+        <a href="/pricing" class="hover:text-[#22d3ee] transition-colors">Pricing</a>
+        <a href="/privacy" class="hover:text-[#22d3ee] transition-colors">Privacy Policy</a>
+        <a href="/terms" class="hover:text-[#22d3ee] transition-colors">Terms of Use</a>
+        <a href="/refund" class="hover:text-[#22d3ee] transition-colors">Refunds</a>
+        <a href="/support" class="hover:text-[#22d3ee] transition-colors">Support</a>
+      </nav>
+      <div class="flex flex-col items-center gap-4">
+        <a href="https://x.com/sociallayerapp" target="_blank" class="text-white hover:text-[#22d3ee] transition-all flex items-center gap-2 text-sm">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          @sociallayerapp
+        </a>
+        <span class="text-[11px] text-white/40 font-bold uppercase tracking-[0.2em]">© 2026 Social Layer • Built for Mindful Connection</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
