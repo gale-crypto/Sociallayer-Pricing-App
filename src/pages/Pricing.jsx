@@ -99,11 +99,11 @@ export default function Pricing() {
       <footer className="w-full text-center py-10 mt-auto border-t border-white/5 bg-black/10">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-6">
           <nav className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-[12px] font-semibold uppercase tracking-wider text-white/60">
-            <a href="/pricing" className="hover:text-[#22d3ee] transition-colors">Pricing</a>
-            <a href="/privacy" className="hover:text-[#22d3ee] transition-colors">Privacy Policy</a>
-            <a href="/terms" className="hover:text-[#22d3ee] transition-colors">Terms of Use</a>
-            <a href="/refund" className="hover:text-[#22d3ee] transition-colors">Refunds</a>
-            <a href="/support" className="hover:text-[#22d3ee] transition-colors">Support</a>
+            <a href="https://sociallayer.app/pricing" className="hover:text-[#22d3ee] transition-colors">Pricing</a>
+            <a href="https://sociallayer.app/privacy" className="hover:text-[#22d3ee] transition-colors">Privacy Policy</a>
+            <a href="https://sociallayer.app/terms" className="hover:text-[#22d3ee] transition-colors">Terms of Use</a>
+            <a href="https://sociallayer.app/refund" className="hover:text-[#22d3ee] transition-colors">Refunds</a>
+            <a href="https://sociallayer.app/support" className="hover:text-[#22d3ee] transition-colors">Support</a>
           </nav>
           <div className="flex flex-col items-center gap-4">
             <a
