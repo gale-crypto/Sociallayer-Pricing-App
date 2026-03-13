@@ -48,7 +48,8 @@ export default function Checkout() {
           theme: 'dark',
           frameTarget: 'checkout-container',
           frameInitialHeight: '450',
-          frameStyle: 'width: 100%; min-width: 312px; background-color: transparent; border: none;',
+          /* Match site theme: transparent so glass wrapper shows, rounded corners */
+          frameStyle: 'width: 100%; min-width: 312px; background-color: transparent; border: none; border-radius: 1rem;',
         },
       },
       eventCallback: (event) => {
@@ -165,7 +166,7 @@ export default function Checkout() {
             </button>
           </div>
 
-          <div className="checkout-container min-h-[400px] rounded-xl overflow-hidden"></div>
+          <div className="checkout-container"></div>
 
           <button
             type="button"

@@ -48,3 +48,18 @@ body {
   background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.3);
 }
+
+/* Paddle checkout container – matches site theme (glass, rounded) */
+.checkout-container {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+  overflow: hidden;
+  min-height: 400px;
+}
+
+/* Paddle iframe is injected here; keep inner frame transparent so wrapper shows */
+.checkout-container iframe {
+  border-radius: 1rem;
+}
