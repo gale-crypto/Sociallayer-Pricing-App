@@ -87,7 +87,9 @@ export default function Pricing() {
       console.log('paddle', paddle);
       // For simple one-time payments, you can open checkout directly
       paddle?.Checkout.open({
-        items: [{ priceId, quantity: 1 }],
+        items: [
+          { priceId, quantity: 1 }
+        ],
         settings: {
           displayMode: 'overlay',
           successUrl: window.location.origin + '/success?plan=' + encodeURIComponent(planName),

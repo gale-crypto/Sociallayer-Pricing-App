@@ -62,7 +62,10 @@ export default function Checkout() {
     setError(null);
 
     paddle.Checkout.open({
-      items: [{ priceId, quantity: 1 }],
+      items: [
+        { priceId: PRICE_IDS.MONTHLY, quantity: 1 },
+        { priceId: PRICE_IDS.ANNUAL, quantity: 1 }
+      ],
       settings: {
         displayMode: 'overlay',
         successUrl: window.location.origin + '/success?plan=' + encodeURIComponent(planName),
