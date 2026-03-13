@@ -12,6 +12,17 @@ function planFromUrl(searchParams) {
   return p === 'monthly' ? 'monthly' : 'annual';
 }
 
+function LogoIcon() {
+  return (
+    <div
+      className="w-[22px] h-[12px] bg-white"
+      style={{
+        clipPath: "path('M0,6 C5,-2 17,-2 22,6 C17,14 5,14 0,6 Z M4,6 C7,9 15,9 18,6 C15,5 7,5 4,6 Z')",
+      }}
+    />
+  );
+}
+
 export default function Checkout() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [paddle, setPaddle] = useState(null);
@@ -91,53 +102,98 @@ export default function Checkout() {
   }, [paddle, selectedPlan]);
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center">
-      <div className="max-w-md mx-4 p-8 w-full">
-        <h2 className="text-2xl font-bold mb-6 text-center">Choose your plan</h2>
+    <div className="min-h-screen flex flex-col">
+      <header className="flex justify-between items-center p-6 max-w-7xl mx-auto w-full">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-[#136a7a] to-[#20e3b2] rounded-full flex items-center justify-center">
+            <LogoIcon />
+          </div>
+          <span className="font-bold text-xl tracking-tight">Social Layer</span>
+        </div>
+      </header>
 
-        {error && <p className="text-red-400 mb-4 text-center">{error}</p>}
+      <main className="max-w-2xl mx-auto px-6 py-12 lg:py-16 flex-grow w-full">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl lg:text-5xl font-bold mb-4">Complete your upgrade</h1>
+          <p className="text-slate-300 text-lg">
+            Choose your plan below. You can switch or cancel anytime.
+          </p>
+        </div>
 
-        {/* Plan selector buttons */}
-        <div className="flex gap-4 justify-center mb-6">
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+            <p className="text-red-400 text-center text-sm">{error}</p>
+          </div>
+        )}
+
+        <div className="glass rounded-[2.5rem] p-8 flex flex-col gap-6">
+          <h2 className="text-2xl font-bold text-[#22d3ee]">Choose your plan</h2>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <button
+              type="button"
+              onClick={() => handlePlanSwitch('monthly')}
+              className={`plan-card rounded-3xl p-6 text-left transition-all ${
+                selectedPlan === 'monthly' ? 'highlight' : ''
+              }`}
+            >
+              <h3 className="font-bold text-xl">Monthly Plan</h3>
+              <p className="text-2xl font-bold mt-2">
+                $9.99<span className="text-sm font-normal text-slate-400">/mo</span>
+              </p>
+              <p className="text-sm text-slate-400 mt-2">Billed monthly. Perfect for flexibility.</p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handlePlanSwitch('annual')}
+              className={`plan-card rounded-3xl p-6 text-left transition-all relative ${
+                selectedPlan === 'annual' ? 'highlight' : ''
+              }`}
+            >
+              <div className="absolute -top-2 right-4 bg-[#22d3ee] text-[#042f2e] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                Best Value
+              </div>
+              <h3 className="font-bold text-xl">Annual Plan</h3>
+              <p className="text-2xl font-bold mt-2">
+                $99.90<span className="text-sm font-normal text-slate-400">/yr</span>
+              </p>
+              <p className="text-sm text-slate-400 mt-1">Equivalent to $8.33 / month. (2 months free)</p>
+              <span className="inline-block mt-2 text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">
+                Save 16.6%
+              </span>
+            </button>
+          </div>
+
+          <div className="checkout-container min-h-[400px] rounded-xl overflow-hidden"></div>
+
           <button
             type="button"
-            onClick={() => handlePlanSwitch('monthly')}
-            className={`flex-1 p-4 rounded-xl border transition-all ${
-              selectedPlan === 'monthly'
-                ? 'border-[#22d3ee] bg-[#22d3ee]/10 text-white'
-                : 'border-white/10 text-slate-400'
-            }`}
+            onClick={() => navigate('/')}
+            className="text-slate-400 hover:text-[#22d3ee] transition-colors text-sm text-center"
           >
-            <div className="font-bold">Monthly</div>
-            <div className="text-2xl font-bold mt-1">$9.99<span className="text-sm font-normal">/mo</span></div>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handlePlanSwitch('annual')}
-            className={`flex-1 p-4 rounded-xl border transition-all ${
-              selectedPlan === 'annual'
-                ? 'border-[#22d3ee] bg-[#22d3ee]/10 text-white'
-                : 'border-white/10 text-slate-400'
-            }`}
-          >
-            <div className="font-bold">Annual</div>
-            <div className="text-2xl font-bold mt-1">$99.90<span className="text-sm font-normal">/yr</span></div>
-            <div className="text-xs text-emerald-400 mt-1">Save 16.6%</div>
+            ← Back to pricing
           </button>
         </div>
 
-        {/* Inline checkout renders here */}
-        <div className="checkout-container"></div>
+        <p className="text-center text-[11px] text-slate-400 uppercase tracking-widest mt-6">
+          No account required • Secure payment
+        </p>
+      </main>
 
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="mt-4 text-slate-400 hover:text-white text-sm w-full text-center"
-        >
-          Back to pricing
-        </button>
-      </div>
+      <footer className="w-full text-center py-10 mt-auto border-t border-white/5 bg-black/10">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-6">
+          <nav className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-[12px] font-semibold uppercase tracking-wider text-white/60">
+            <a href="https://sociallayer.app/pricing" className="hover:text-[#22d3ee] transition-colors">Pricing</a>
+            <a href="https://sociallayer.app/privacy" className="hover:text-[#22d3ee] transition-colors">Privacy Policy</a>
+            <a href="https://sociallayer.app/terms" className="hover:text-[#22d3ee] transition-colors">Terms of Use</a>
+            <a href="https://sociallayer.app/refund" className="hover:text-[#22d3ee] transition-colors">Refunds</a>
+          </nav>
+          <span className="text-[11px] text-white/40 font-bold uppercase tracking-[0.2em]">
+            © 2026 Social Layer • Built for Mindful Connection
+          </span>
+        </div>
+      </footer>
     </div>
   );
 }
