@@ -17,7 +17,7 @@ export default function Pricing() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  console.log('Paddle Environment', import.meta.env.VITE_PADDLE_CLIENT_TOKEN, import.meta.env.VITE_PADDLE_ENVIRONMENT)
+  // console.log('Paddle Environment', import.meta.env.VITE_PADDLE_CLIENT_TOKEN, import.meta.env.VITE_PADDLE_ENVIRONMENT)
 
   // Initialize Paddle when component mounts
   useEffect(() => {
