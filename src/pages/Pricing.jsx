@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { initializePaddle } from '@paddle/paddle-js';
 
 function LogoIcon() {
@@ -16,6 +17,9 @@ export default function Pricing() {
   const [paddle, setPaddle] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchParams] = useSearchParams();
+  const monthlyCardRef = useRef(null);
+  const annualCardRef = useRef(null);
 
   // console.log('Paddle Environment', import.meta.env.VITE_PADDLE_CLIENT_TOKEN, import.meta.env.VITE_PADDLE_ENVIRONMENT)
 
@@ -27,10 +31,22 @@ export default function Pricing() {
       eventCallback: (event) => {
         if (event.name === 'checkout.completed') {
           console.log('Checkout completed!', event.data);
-          // You can track this in your analytics
+          // Notify Chrome extension to activate Pro (pay.sociallayer.app → extension)
+          const extensionId = import.meta.env.VITE_EXTENSION_ID;
+          if (typeof chrome !== 'undefined' && chrome.runtime && extensionId) {
+            chrome.runtime.sendMessage(extensionId, { type: 'SUBSCRIPTION_UPDATED', data: event.data }, (response) => {
+              if (chrome.runtime.lastError) {
+                console.warn('[Pricing] Extension not installed or not reachable:', chrome.runtime.lastError.message);
+              } else if (response?.ok) {
+                console.log('[Pricing] Extension updated to Pro');
+              }
+            });
+          }
+          // Analytics
           if (typeof window.gtag !== 'undefined') {
+            const planName = event.data?.items?.[0]?.price?.description || 'Pro';
             window.gtag('event', 'purchase', {
-              transaction_id: event.data.id,
+              transaction_id: event.data?.id,
               value: planName.includes('Monthly') ? 9.99 : 99.90,
               currency: 'USD'
             });
@@ -48,6 +64,15 @@ export default function Pricing() {
       setError('Failed to initialize payment system');
     });
   }, []);
+
+  // When opened from extension with ?plan=monthly|annual, scroll to that plan card
+  useEffect(() => {
+    const plan = searchParams.get('plan');
+    const ref = plan === 'monthly' ? monthlyCardRef.current : plan === 'annual' ? annualCardRef.current : null;
+    if (ref) {
+      ref.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [searchParams]);
 
   const handleCheckout = async (priceId, planName) => {
     if (!paddle) {
@@ -136,7 +161,7 @@ export default function Pricing() {
 
           <div className="glass rounded-[2.5rem] p-8 flex flex-col gap-6">
             {/* Monthly Plan Card */}
-            <div className="plan-card rounded-3xl p-6">
+            <div ref={monthlyCardRef} className="plan-card rounded-3xl p-6">
               <div className="flex justify-between items-center mb-2">
                 <h3 className="font-bold text-xl">Monthly Plan</h3>
                 <span className="text-2xl font-bold">
@@ -155,7 +180,7 @@ export default function Pricing() {
             </div>
 
             {/* Annual Plan Card */}
-            <div className="plan-card highlight rounded-3xl p-6 relative">
+            <div ref={annualCardRef} className="plan-card highlight rounded-3xl p-6 relative">
               <div className="absolute -top-3 right-6 bg-[#22d3ee] text-[#042f2e] text-[10px] font-bold px-3 py-1 rounded-full uppercase">
                 Best Value
               </div>

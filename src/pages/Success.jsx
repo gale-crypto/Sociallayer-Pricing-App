@@ -7,6 +7,21 @@ export default function Success() {
   const [countdown, setCountdown] = useState(10);
   const plan = searchParams.get('plan') || 'Pro';
 
+  // Notify Chrome extension to activate Pro when user lands on success after payment
+  useEffect(() => {
+    const extensionId = import.meta.env.VITE_EXTENSION_ID;
+    if (typeof chrome !== 'undefined' && chrome.runtime && extensionId) {
+      chrome.runtime.sendMessage(extensionId, {
+        type: 'SUBSCRIPTION_UPDATED',
+        data: { fromSuccessPage: true, plan }
+      }, (response) => {
+        if (!chrome.runtime.lastError && response?.ok) {
+          console.log('[Success] Extension set to Pro');
+        }
+      });
+    }
+  }, [plan]);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
