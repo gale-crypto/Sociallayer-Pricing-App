@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { initializePaddle } from '@paddle/paddle-js';
 
 const PRICE_IDS = {
@@ -10,37 +10,19 @@ const PRICE_IDS = {
 export default function Checkout() {
   const [paddle, setPaddle] = useState(null);
   const [error, setError] = useState(null);
-  const [searchParams] = useSearchParams();
+  const [selectedPlan, setSelectedPlan] = useState('annual');
   const navigate = useNavigate();
-  const openedRef = useRef(false);
-
-  const plan = (searchParams.get('plan') || 'annual').toLowerCase();
-  const isMonthly = plan === 'monthly';
-  const priceId = isMonthly ? PRICE_IDS.MONTHLY : PRICE_IDS.ANNUAL;
-  const planName = isMonthly ? 'Monthly Plan' : 'Annual Plan';
 
   useEffect(() => {
-    if (plan !== 'monthly' && plan !== 'annual') {
-      navigate('/', { replace: true });
-      return;
-    }
-
     initializePaddle({
       environment: import.meta.env.VITE_PADDLE_ENVIRONMENT || 'sandbox',
       token: import.meta.env.VITE_PADDLE_CLIENT_TOKEN || 'your_client_side_token_here',
       eventCallback: (event) => {
         if (event.name === 'checkout.completed') {
+          console.log('Checkout completed!', event.data);
           const extensionId = import.meta.env.VITE_EXTENSION_ID;
           if (typeof chrome !== 'undefined' && chrome.runtime && extensionId) {
             chrome.runtime.sendMessage(extensionId, { type: 'SUBSCRIPTION_UPDATED', data: event.data }, () => {});
-          }
-          if (typeof window.gtag !== 'undefined') {
-            const name = event.data?.items?.[0]?.price?.description || planName;
-            window.gtag('event', 'purchase', {
-              transaction_id: event.data?.id,
-              value: name.includes('Monthly') ? 9.99 : 99.90,
-              currency: 'USD',
-            });
           }
         }
       },
@@ -52,58 +34,76 @@ export default function Checkout() {
         console.error('Paddle init failed:', err);
         setError('Failed to load checkout. Please try again.');
       });
-  }, [plan, planName, navigate]);
+  }, []);
 
-  // Auto-open checkout modal once Paddle is ready
-  useEffect(() => {
-    if (!paddle || !priceId || openedRef.current) return;
+  const handleCheckout = () => {
+    if (!paddle) return;
 
-    openedRef.current = true;
-    setError(null);
+    const priceId = selectedPlan === 'monthly' ? PRICE_IDS.MONTHLY : PRICE_IDS.ANNUAL;
+    const planName = selectedPlan === 'monthly' ? 'Monthly Plan' : 'Annual Plan';
 
+    // Only one price ID is passed — matching billing intervals required
     paddle.Checkout.open({
-      items: [
-        { priceId: PRICE_IDS.MONTHLY, quantity: 1 },
-        { priceId: PRICE_IDS.ANNUAL, quantity: 1 }
-      ],
+      items: [{ priceId: priceId, quantity: 1 }],
       settings: {
         displayMode: 'overlay',
         successUrl: window.location.origin + '/success?plan=' + encodeURIComponent(planName),
         theme: 'dark',
       },
-    }).catch((err) => {
-      console.error('Checkout open failed:', err);
-      setError('Failed to open checkout. Please try again.');
-      openedRef.current = false;
     });
-  }, [paddle, priceId, planName]);
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="max-w-md mx-4 p-8 text-center">
-          <p className="text-red-400 mb-4">{error}</p>
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            className="text-[#22d3ee] hover:underline"
-          >
-            Back to pricing
-          </button>
-        </div>
-      </div>
-    );
-  }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center">
       <div className="max-w-md mx-4 p-8 text-center">
-        <div className="animate-pulse text-slate-400 mb-4">Opening checkout...</div>
-        <p className="text-sm text-slate-500">If the checkout modal did not appear, check for a popup blocker.</p>
+        <h2 className="text-2xl font-bold mb-6">Choose your plan</h2>
+
+        {error && <p className="text-red-400 mb-4">{error}</p>}
+
+        {/* Plan selector */}
+        <div className="flex gap-4 justify-center mb-8">
+          <button
+            type="button"
+            onClick={() => setSelectedPlan('monthly')}
+            className={`flex-1 p-4 rounded-xl border transition-all ${
+              selectedPlan === 'monthly'
+                ? 'border-[#22d3ee] bg-[#22d3ee]/10 text-white'
+                : 'border-white/10 text-slate-400'
+            }`}
+          >
+            <div className="font-bold">Monthly</div>
+            <div className="text-2xl font-bold mt-1">$9.99<span className="text-sm font-normal">/mo</span></div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSelectedPlan('annual')}
+            className={`flex-1 p-4 rounded-xl border transition-all ${
+              selectedPlan === 'annual'
+                ? 'border-[#22d3ee] bg-[#22d3ee]/10 text-white'
+                : 'border-white/10 text-slate-400'
+            }`}
+          >
+            <div className="font-bold">Annual</div>
+            <div className="text-2xl font-bold mt-1">$99.90<span className="text-sm font-normal">/yr</span></div>
+            <div className="text-xs text-emerald-400 mt-1">Save 16.6%</div>
+          </button>
+        </div>
+
+        {/* Checkout button */}
+        <button
+          type="button"
+          onClick={handleCheckout}
+          disabled={!paddle}
+          className="w-full py-4 rounded-2xl bg-[#22d3ee] text-black font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {paddle ? `Get ${selectedPlan === 'monthly' ? 'Monthly' : 'Annual'} Plan` : 'Loading...'}
+        </button>
+
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="mt-6 text-[#22d3ee] hover:underline text-sm"
+          className="mt-4 text-slate-400 hover:text-white text-sm"
         >
           Back to pricing
         </button>
