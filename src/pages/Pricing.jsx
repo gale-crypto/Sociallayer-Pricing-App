@@ -94,6 +94,7 @@ export default function Pricing() {
           displayMode: 'overlay',
           successUrl: window.location.origin + '/success?plan=' + encodeURIComponent(planName),
           theme: 'dark', // Matches your dark theme
+          frameStyle: "background: #144e57"
         }
       });
     } catch (err) {
