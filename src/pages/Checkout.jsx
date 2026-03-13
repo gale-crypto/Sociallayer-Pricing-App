@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { initializePaddle } from '@paddle/paddle-js';
 
 const PRICE_IDS = {
@@ -7,11 +7,24 @@ const PRICE_IDS = {
   ANNUAL: 'pri_01khc5p531x8f2bv1z2yyqfmqd',
 };
 
+function planFromUrl(searchParams) {
+  const p = (searchParams.get('plan') || 'annual').toLowerCase();
+  return p === 'monthly' ? 'monthly' : 'annual';
+}
+
 export default function Checkout() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [paddle, setPaddle] = useState(null);
   const [error, setError] = useState(null);
-  const [selectedPlan, setSelectedPlan] = useState('annual');
+  const planParam = planFromUrl(searchParams);
+  const [selectedPlan, setSelectedPlan] = useState(planParam);
   const navigate = useNavigate();
+  const openedFromUrlRef = useRef(false);
+
+  // Keep state in sync with URL when visiting with ?plan=monthly|annual
+  useEffect(() => {
+    setSelectedPlan(planParam);
+  }, [planParam]);
 
   useEffect(() => {
     initializePaddle({
@@ -48,12 +61,13 @@ export default function Checkout() {
 
   const handlePlanSwitch = (plan) => {
     setSelectedPlan(plan);
+    // Update URL so link reflects current plan: /checkout?plan=monthly|annual
+    setSearchParams({ plan });
     if (!paddle) return;
 
     const priceId = plan === 'monthly' ? PRICE_IDS.MONTHLY : PRICE_IDS.ANNUAL;
     const planName = plan === 'monthly' ? 'Monthly Plan' : 'Annual Plan';
 
-    // If checkout is already open, update it; otherwise open it
     paddle.Checkout.open({
       items: [{ priceId: priceId, quantity: 1 }],
       settings: {
@@ -61,6 +75,20 @@ export default function Checkout() {
       },
     });
   };
+
+  // When user visits /checkout?plan=monthly|annual (e.g. from extension), open that plan's checkout once Paddle is ready
+  useEffect(() => {
+    if (!paddle || !selectedPlan || openedFromUrlRef.current) return;
+    openedFromUrlRef.current = true;
+    const priceId = selectedPlan === 'monthly' ? PRICE_IDS.MONTHLY : PRICE_IDS.ANNUAL;
+    const planName = selectedPlan === 'monthly' ? 'Monthly Plan' : 'Annual Plan';
+    paddle.Checkout.open({
+      items: [{ priceId, quantity: 1 }],
+      settings: {
+        successUrl: window.location.origin + '/success?plan=' + encodeURIComponent(planName),
+      },
+    });
+  }, [paddle, selectedPlan]);
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center">
