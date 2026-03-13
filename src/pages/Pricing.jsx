@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react';
+import { initializePaddle } from '@paddle/paddle-js';
+
 function LogoIcon() {
   return (
     <div
@@ -10,6 +13,76 @@ function LogoIcon() {
 }
 
 export default function Pricing() {
+  const [paddle, setPaddle] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  console.log('Paddle Environment', import.meta.env.VITE_PADDLE_CLIENT_TOKEN, import.meta.env.VITE_PADDLE_ENVIRONMENT)
+
+  // Initialize Paddle when component mounts
+  useEffect(() => {
+    initializePaddle({
+      environment: import.meta.env.VITE_PADDLE_ENVIRONMENT || 'sandbox',
+      token: import.meta.env.VITE_PADDLE_CLIENT_TOKEN || 'your_client_side_token_here',
+      eventCallback: (event) => {
+        if (event.name === 'checkout.completed') {
+          console.log('Checkout completed!', event.data);
+          // You can track this in your analytics
+          if (typeof window.gtag !== 'undefined') {
+            window.gtag('event', 'purchase', {
+              transaction_id: event.data.id,
+              value: planName.includes('Monthly') ? 9.99 : 99.90,
+              currency: 'USD'
+            });
+          }
+        }
+      }      
+    }).then((paddleInstance) => {
+      if (paddleInstance) {
+        console.log('paddleInstance', paddleInstance);
+        setPaddle(paddleInstance);
+        console.log('Paddle initialized successfully');
+      }
+    }).catch(error => {
+      console.error('Paddle initialization failed:', error);
+      setError('Failed to initialize payment system');
+    });
+  }, []);
+
+  const handleCheckout = async (priceId, planName) => {
+    if (!paddle) {
+      setError('Payment system is still loading. Please try again.');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      console.log('paddle', paddle);
+      // For simple one-time payments, you can open checkout directly
+      paddle?.Checkout.open({
+        items: [{ priceId, quantity: 1 }],
+        settings: {
+          displayMode: 'overlay',
+          successUrl: window.location.origin + '/success?plan=' + encodeURIComponent(planName),
+          theme: 'dark', // Matches your dark theme
+        }
+      });
+    } catch (err) {
+      console.error('Checkout failed:', err);
+      setError('Failed to start checkout. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Price IDs - Replace these with your actual Paddle price IDs
+  const PRICE_IDS = {
+    MONTHLY: 'pri_01khc5mnrvvhp9yhmzd6h27enh', // Replace with your monthly plan price ID
+    ANNUAL: 'pri_01khc5p531x8f2bv1z2yyqfmqd'     // Replace with your annual plan price ID
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="flex justify-between items-center p-6 max-w-7xl mx-auto w-full">
@@ -28,6 +101,13 @@ export default function Pricing() {
             More control, when you want it. Defaults stay the same. Upgrade anytime. Cancel anytime.
           </p>
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="max-w-2xl mx-auto mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+            <p className="text-red-400 text-center text-sm">{error}</p>
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-8 items-stretch">
           <div className="glass rounded-[2.5rem] p-10 flex flex-col justify-center">
@@ -55,6 +135,7 @@ export default function Pricing() {
           </div>
 
           <div className="glass rounded-[2.5rem] p-8 flex flex-col gap-6">
+            {/* Monthly Plan Card */}
             <div className="plan-card rounded-3xl p-6">
               <div className="flex justify-between items-center mb-2">
                 <h3 className="font-bold text-xl">Monthly Plan</h3>
@@ -62,9 +143,18 @@ export default function Pricing() {
                   $9.99<span className="text-sm font-normal text-slate-400">/mo</span>
                 </span>
               </div>
-              <p className="text-sm text-slate-400">Billed monthly. Perfect for flexibility.</p>
+              <p className="text-sm text-slate-400 mb-4">Billed monthly. Perfect for flexibility.</p>
+              <button 
+                type="button" 
+                onClick={() => handleCheckout(PRICE_IDS.MONTHLY, 'Monthly Plan')}
+                disabled={isLoading || !paddle}
+                className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 rounded-xl text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Processing...' : 'Select Monthly Plan'}
+              </button>
             </div>
 
+            {/* Annual Plan Card */}
             <div className="plan-card highlight rounded-3xl p-6 relative">
               <div className="absolute -top-3 right-6 bg-[#22d3ee] text-[#042f2e] text-[10px] font-bold px-3 py-1 rounded-full uppercase">
                 Best Value
@@ -75,20 +165,25 @@ export default function Pricing() {
                   $99.90<span className="text-sm font-normal text-slate-400">/yr</span>
                 </span>
               </div>
-              <p className="text-sm text-slate-400 mb-4">
+              <p className="text-sm text-slate-400 mb-2">
                 Equivalent to $8.33 / month. (2 months free)
               </p>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mb-4">
                 <span className="text-xs line-through text-slate-500">$119.88</span>
                 <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">
                   Save 16.6%
                 </span>
               </div>
+              <button 
+                type="button" 
+                onClick={() => handleCheckout(PRICE_IDS.ANNUAL, 'Annual Plan')}
+                disabled={isLoading || !paddle}
+                className="cta-button w-full py-4 rounded-2xl text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Processing...' : 'Upgrade to Pro'}
+              </button>
             </div>
 
-            <button type="button" className="cta-button w-full py-4 rounded-2xl text-lg font-bold mt-4">
-              Upgrade to Pro
-            </button>
             <p className="text-center text-[11px] text-slate-400 uppercase tracking-widest">
               No account required • 100% local
             </p>
