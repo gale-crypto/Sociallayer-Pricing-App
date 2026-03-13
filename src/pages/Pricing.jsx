@@ -93,7 +93,7 @@ export default function Pricing() {
         settings: {
           displayMode: 'overlay',
           successUrl: window.location.origin + '/success?plan=' + encodeURIComponent(planName),
-          theme: 'dark',
+          theme: 'dark', // Matches your dark theme
         }
       });
     } catch (err) {
