@@ -3,8 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { initializePaddle } from '@paddle/paddle-js';
 
 const PRICE_IDS = {
-  MONTHLY: 'pri_01khc5mnrvvhp9yhmzd6h27enh',
-  ANNUAL: 'pri_01khc5p531x8f2bv1z2yyqfmqd',
+  MONTHLY: 'pri_01khc5p531x8f2bv1z2yyqfmqd',
+  ANNUAL: 'pri_01khc5mnrvvhp9yhmzd6h27enh',
   LIFETIME: 'pri_01km01y3rftzj68symngtmadv5',
 };
 
@@ -31,7 +31,6 @@ export default function Checkout() {
   const [paddle, setPaddle] = useState(null);
   const [error, setError] = useState(null);
   const planParam = planFromUrl(searchParams);
-  const offerParam = (searchParams.get('offer') || '').toLowerCase();
   const [selectedPlan, setSelectedPlan] = useState(planParam);
   const navigate = useNavigate();
   const openedFromUrlRef = useRef(false);
@@ -89,20 +88,17 @@ export default function Checkout() {
       });
   }, []);
 
-  const handlePlanSwitch = (plan, offer = null) => {
+  const handlePlanSwitch = (plan) => {
     setSelectedPlan(plan);
-    // Update URL so link reflects current plan: /checkout?plan=monthly|annual
-    setSearchParams(offer ? { plan, offer } : { plan });
+    // Update URL so link reflects current plan: /checkout?plan=monthly|annual|lifetime
+    setSearchParams({ plan });
     if (!paddle) return;
 
     const priceId =
       plan === 'monthly' ? PRICE_IDS.MONTHLY :
       plan === 'lifetime' ? PRICE_IDS.LIFETIME :
       PRICE_IDS.ANNUAL;
-    const planName =
-      offer === 'lifetime'
-        ? 'Lifetime Plan'
-        : (plan === 'monthly' ? 'Monthly Plan' : plan === 'lifetime' ? 'Lifetime Plan' : 'Annual Plan');
+    const planName = plan === 'monthly' ? 'Monthly Plan' : plan === 'lifetime' ? 'Lifetime Plan' : 'Annual Plan';
 
     paddle.Checkout.open({
       items: [{ priceId: priceId, quantity: 1 }],
@@ -120,17 +116,14 @@ export default function Checkout() {
       selectedPlan === 'monthly' ? PRICE_IDS.MONTHLY :
       selectedPlan === 'lifetime' ? PRICE_IDS.LIFETIME :
       PRICE_IDS.ANNUAL;
-    const planName =
-      offerParam === 'lifetime'
-        ? 'Lifetime Plan'
-        : (selectedPlan === 'monthly' ? 'Monthly Plan' : selectedPlan === 'lifetime' ? 'Lifetime Plan' : 'Annual Plan');
+    const planName = selectedPlan === 'monthly' ? 'Monthly Plan' : selectedPlan === 'lifetime' ? 'Lifetime Plan' : 'Annual Plan';
     paddle.Checkout.open({
       items: [{ priceId, quantity: 1 }],
       settings: {
         successUrl: window.location.origin + '/success?plan=' + encodeURIComponent(planName),
       },
     });
-  }, [paddle, selectedPlan, offerParam]);
+  }, [paddle, selectedPlan]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -161,11 +154,22 @@ export default function Checkout() {
           <h2 className="text-2xl font-bold text-[#22d3ee]">Choose your plan</h2>
 
           {/* Small lifetime card (upgrade page only) */}
-          <div
-            className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-left transition-colors hover:bg-white/10"
+          <button
+            type="button"
+            onClick={() => handlePlanSwitch('lifetime')}
+            className={`w-full rounded-2xl border p-4 text-left transition-colors ${
+              selectedPlan === 'lifetime'
+                ? 'border-[#22d3ee] bg-[#22d3ee]/10'
+                : 'border-white/10 bg-white/5 hover:bg-white/10'
+            }`}
           >
-            <div className="font-bold text-sm text-white/90">$79.90 Lifetime (300 limit)</div>
-          </div>
+            <div className="flex items-center justify-between gap-3">
+              <div className="font-bold text-sm text-white/90">$79.90 Lifetime</div>
+              <span className="text-[10px] font-bold text-amber-300 bg-amber-500/10 px-2 py-1 rounded-full uppercase">
+                295/300 Sold
+              </span>
+            </div>
+          </button>
 
           <div className="grid sm:grid-cols-2 gap-4">
             <button
@@ -236,14 +240,14 @@ export default function Checkout() {
             </div>
 
             <p className="text-[#22d3ee] font-semibold text-base text-center mb-6">
-              Unlock Lifetime - $79.90 (limited to 300)
+              Unlock Lifetime - $79.90 (295/300 sold)
             </p>
 
             <button
               type="button"
               onClick={() => {
                 setShowLifetimePopup(false);
-                handlePlanSwitch('annual', 'lifetime');
+                handlePlanSwitch('lifetime');
               }}
               className="w-full py-4 rounded-2xl text-lg font-bold bg-[#22d3ee] text-[#042f2e] hover:bg-[#1bbbd6] transition-colors"
             >

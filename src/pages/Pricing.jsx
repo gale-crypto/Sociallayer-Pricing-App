@@ -107,8 +107,8 @@ export default function Pricing() {
 
   // Price IDs - Replace these with your actual Paddle price IDs
   const PRICE_IDS = {
-    MONTHLY: 'pri_01khc5mnrvvhp9yhmzd6h27enh', // Replace with your monthly plan price ID
-    ANNUAL: 'pri_01khc5p531x8f2bv1z2yyqfmqd'     // Replace with your annual plan price ID
+    MONTHLY: 'pri_01khc5p531x8f2bv1z2yyqfmqd', // Replace with your monthly plan price ID
+    ANNUAL: 'pri_01khc5mnrvvhp9yhmzd6h27enh'     // Replace with your annual plan price ID
   };
 
   return (
