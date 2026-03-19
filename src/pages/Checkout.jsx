@@ -5,11 +5,14 @@ import { initializePaddle } from '@paddle/paddle-js';
 const PRICE_IDS = {
   MONTHLY: 'pri_01khc5mnrvvhp9yhmzd6h27enh',
   ANNUAL: 'pri_01khc5p531x8f2bv1z2yyqfmqd',
+  LIFETIME: 'pri_01km01y3rftzj68symngtmadv5',
 };
 
 function planFromUrl(searchParams) {
   const p = (searchParams.get('plan') || 'annual').toLowerCase();
-  return p === 'monthly' ? 'monthly' : 'annual';
+  if (p === 'monthly') return 'monthly';
+  if (p === 'lifetime') return 'lifetime';
+  return 'annual';
 }
 
 function LogoIcon() {
@@ -28,14 +31,29 @@ export default function Checkout() {
   const [paddle, setPaddle] = useState(null);
   const [error, setError] = useState(null);
   const planParam = planFromUrl(searchParams);
+  const offerParam = (searchParams.get('offer') || '').toLowerCase();
   const [selectedPlan, setSelectedPlan] = useState(planParam);
   const navigate = useNavigate();
   const openedFromUrlRef = useRef(false);
+  const [showLifetimePopup, setShowLifetimePopup] = useState(false);
 
   // Keep state in sync with URL when visiting with ?plan=monthly|annual
   useEffect(() => {
     setSelectedPlan(planParam);
   }, [planParam]);
+
+  // Strong popup only when the upgrade/checkout page is opened.
+  useEffect(() => {
+    try {
+      const key = 'socialLayerLifetimeDealPopupShown_page';
+      if (sessionStorage.getItem(key) !== '1') {
+        sessionStorage.setItem(key, '1');
+        setShowLifetimePopup(true);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
 
   useEffect(() => {
     initializePaddle({
@@ -71,14 +89,20 @@ export default function Checkout() {
       });
   }, []);
 
-  const handlePlanSwitch = (plan) => {
+  const handlePlanSwitch = (plan, offer = null) => {
     setSelectedPlan(plan);
     // Update URL so link reflects current plan: /checkout?plan=monthly|annual
-    setSearchParams({ plan });
+    setSearchParams(offer ? { plan, offer } : { plan });
     if (!paddle) return;
 
-    const priceId = plan === 'monthly' ? PRICE_IDS.MONTHLY : PRICE_IDS.ANNUAL;
-    const planName = plan === 'monthly' ? 'Monthly Plan' : 'Annual Plan';
+    const priceId =
+      plan === 'monthly' ? PRICE_IDS.MONTHLY :
+      plan === 'lifetime' ? PRICE_IDS.LIFETIME :
+      PRICE_IDS.ANNUAL;
+    const planName =
+      offer === 'lifetime'
+        ? 'Lifetime Plan'
+        : (plan === 'monthly' ? 'Monthly Plan' : plan === 'lifetime' ? 'Lifetime Plan' : 'Annual Plan');
 
     paddle.Checkout.open({
       items: [{ priceId: priceId, quantity: 1 }],
@@ -92,15 +116,21 @@ export default function Checkout() {
   useEffect(() => {
     if (!paddle || !selectedPlan || openedFromUrlRef.current) return;
     openedFromUrlRef.current = true;
-    const priceId = selectedPlan === 'monthly' ? PRICE_IDS.MONTHLY : PRICE_IDS.ANNUAL;
-    const planName = selectedPlan === 'monthly' ? 'Monthly Plan' : 'Annual Plan';
+    const priceId =
+      selectedPlan === 'monthly' ? PRICE_IDS.MONTHLY :
+      selectedPlan === 'lifetime' ? PRICE_IDS.LIFETIME :
+      PRICE_IDS.ANNUAL;
+    const planName =
+      offerParam === 'lifetime'
+        ? 'Lifetime Plan'
+        : (selectedPlan === 'monthly' ? 'Monthly Plan' : selectedPlan === 'lifetime' ? 'Lifetime Plan' : 'Annual Plan');
     paddle.Checkout.open({
       items: [{ priceId, quantity: 1 }],
       settings: {
         successUrl: window.location.origin + '/success?plan=' + encodeURIComponent(planName),
       },
     });
-  }, [paddle, selectedPlan]);
+  }, [paddle, selectedPlan, offerParam]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -129,6 +159,13 @@ export default function Checkout() {
 
         <div className="glass rounded-[2.5rem] p-8 flex flex-col gap-6">
           <h2 className="text-2xl font-bold text-[#22d3ee]">Choose your plan</h2>
+
+          {/* Small lifetime card (upgrade page only) */}
+          <div
+            className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-left transition-colors hover:bg-white/10"
+          >
+            <div className="font-bold text-sm text-white/90">$79.90 Lifetime (300 limit)</div>
+          </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
             <button
@@ -181,6 +218,48 @@ export default function Checkout() {
           No account required • Secure payment
         </p>
       </main>
+
+      {/* Strong lifetime popup (only when checkout page is opened) */}
+      {showLifetimePopup && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-[2rem] bg-slate-900 border border-white/10 p-6 shadow-2xl text-white">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div />
+              <button
+                type="button"
+                onClick={() => setShowLifetimePopup(false)}
+                className="text-white/70 hover:text-white transition-colors"
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <p className="text-[#22d3ee] font-semibold text-base text-center mb-6">
+              Unlock Lifetime - $79.90 (limited to 300)
+            </p>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowLifetimePopup(false);
+                handlePlanSwitch('annual', 'lifetime');
+              }}
+              className="w-full py-4 rounded-2xl text-lg font-bold bg-[#22d3ee] text-[#042f2e] hover:bg-[#1bbbd6] transition-colors"
+            >
+              Unlock Lifetime
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowLifetimePopup(false)}
+              className="w-full py-3 mt-3 rounded-2xl text-sm font-semibold bg-white/5 text-white/70 hover:bg-white/10 transition-colors"
+            >
+              Not now
+            </button>
+          </div>
+        </div>
+      )}
 
       <footer className="w-full text-center py-10 mt-auto border-t border-white/5 bg-black/10">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-6">
