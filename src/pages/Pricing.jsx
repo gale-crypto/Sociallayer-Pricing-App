@@ -47,7 +47,7 @@ export default function Pricing() {
             const planName = event.data?.items?.[0]?.price?.description || 'Pro';
             window.gtag('event', 'purchase', {
               transaction_id: event.data?.id,
-              value: planName.includes('Monthly') ? 9.99 : 99.90,
+              value: planName.includes('Monthly') ? 12.00 : 120.00,
               currency: 'USD'
             });
           }
@@ -168,7 +168,7 @@ export default function Pricing() {
               <div className="flex justify-between items-center mb-2">
                 <h3 className="font-bold text-xl">Monthly Plan</h3>
                 <span className="text-2xl font-bold">
-                  $9.99<span className="text-sm font-normal text-slate-400">/mo</span>
+                  $12.00<span className="text-sm font-normal text-slate-400">/mo</span>
                 </span>
               </div>
               <p className="text-sm text-slate-400 mb-4">Billed monthly. Perfect for flexibility.</p>
@@ -190,7 +190,7 @@ export default function Pricing() {
               <div className="flex justify-between items-center mb-2">
                 <h3 className="font-bold text-xl">Annual Plan</h3>
                 <span className="text-2xl font-bold">
-                  $99.90<span className="text-sm font-normal text-slate-400">/yr</span>
+                  $120.00<span className="text-sm font-normal text-slate-400">/yr</span>
                 </span>
               </div>
               <p className="text-sm text-slate-400 mb-2">

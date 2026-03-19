@@ -181,7 +181,7 @@ export default function Checkout() {
             >
               <h3 className="font-bold text-xl">Monthly Plan</h3>
               <p className="text-2xl font-bold mt-2">
-                $9.99<span className="text-sm font-normal text-slate-400">/mo</span>
+                $12.00<span className="text-sm font-normal text-slate-400">/mo</span>
               </p>
               <p className="text-sm text-slate-400 mt-2">Billed monthly. Perfect for flexibility.</p>
             </button>
@@ -198,9 +198,9 @@ export default function Checkout() {
               </div>
               <h3 className="font-bold text-xl">Annual Plan</h3>
               <p className="text-2xl font-bold mt-2">
-                $99.90<span className="text-sm font-normal text-slate-400">/yr</span>
+                $120.00<span className="text-sm font-normal text-slate-400">/yr</span>
               </p>
-              <p className="text-sm text-slate-400 mt-1">Equivalent to $8.33 / month. (2 months free)</p>
+              <p className="text-sm text-slate-400 mt-1">Equivalent to $12.00 / month. (2 months free)</p>
               <span className="inline-block mt-2 text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">
                 Save 16.6%
               </span>
