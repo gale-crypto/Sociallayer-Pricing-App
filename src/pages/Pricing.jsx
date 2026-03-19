@@ -194,7 +194,7 @@ export default function Pricing() {
                 </span>
               </div>
               <p className="text-sm text-slate-400 mb-2">
-                Equivalent to $8.33 / month. (2 months free)
+                Equivalent to $12.00 / month. (2 months free)
               </p>
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-xs line-through text-slate-500">$119.88</span>
