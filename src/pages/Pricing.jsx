@@ -194,12 +194,12 @@ export default function Pricing() {
                 </span>
               </div>
               <p className="text-sm text-slate-400 mb-2">
-                Equivalent to $12.00 / month. (2 months free)
+                Equivalent to $10.00 / month.
               </p>
               <div className="flex items-center gap-3 mb-4">
-                <span className="text-xs line-through text-slate-500">$119.88</span>
+                <span className="text-xs line-through text-slate-500">$144.00</span>
                 <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">
-                  Save 16.6%
+                  Save $24.00 (16.7%)
                 </span>
               </div>
               <button 

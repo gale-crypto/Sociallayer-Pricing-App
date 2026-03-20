@@ -200,9 +200,9 @@ export default function Checkout() {
               <p className="text-2xl font-bold mt-2">
                 $120.00<span className="text-sm font-normal text-slate-400">/yr</span>
               </p>
-              <p className="text-sm text-slate-400 mt-1">Equivalent to $12.00 / month. (2 months free)</p>
+              <p className="text-sm text-slate-400 mt-1">Equivalent to $10.00 / month.</p>
               <span className="inline-block mt-2 text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">
-                Save 16.6%
+                Save $24.00 (16.7%)
               </span>
             </button>
           </div>
