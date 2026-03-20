@@ -3,8 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { initializePaddle } from '@paddle/paddle-js';
 
 const PRICE_IDS = {
-  MONTHLY: 'pri_01khc5mnrvvhp9yhmzd6h27enh',
-  ANNUAL: 'pri_01khc5p531x8f2bv1z2yyqfmqd',
+  MONTHLY: 'pri_01khc5p531x8f2bv1z2yyqfmqd',
+  ANNUAL: 'pri_01khc5mnrvvhp9yhmzd6h27enh',
   LIFETIME: 'pri_01km01y3rftzj68symngtmadv5',
 };
 
